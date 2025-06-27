@@ -1,7 +1,7 @@
 #  The contact options.
 - type: linkedin
   icon: 'fab fa-linkedin'   # icons powered by <https://fontawesome.com/>
-  url:  ''       
+  url:  'https://www.linkedin.com/in/li-miao-1a911285'
 
 - type: email
   icon: "fas fa-envelope"
@@ -10,8 +10,8 @@
 - type: github
   icon: "fab fa-github"
 
-# - type: twitter
-# icon: "fa-brands fa-x-twitter"
+- type: twitter
+  icon: "fa-brands fa-x-twitter"
 
 # - type: rss
 #   icon: "fas fa-rss"
