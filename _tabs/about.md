@@ -4,5 +4,8 @@ icon: fas fa-info-circle
 order: 4
 ---
 
-> Add Markdown syntax content to file `_tabs/about.md`{: .filepath } and it will show up on this page.
-{: .prompt-tip }
+Hi! I'm Li Miao, a passionate technologist with a deep interest in AI and Large Language Models.
+
+I love exploring cutting-edge technologies and sharing insights with the developer community.
+
+Connect with me on [GitHub](https://github.com/limiao2) or [LinkedIn](https://www.linkedin.com/in/li-miao-1a911285/)!
