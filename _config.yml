@@ -230,4 +230,7 @@ mermaid:
   version: "10.9.0" # or the latest stable version
 
 plugins:
-  - jekyll-mermaid
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-paginate
+  - jekyll-archives
