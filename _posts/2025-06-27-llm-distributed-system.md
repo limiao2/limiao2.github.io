@@ -196,9 +196,9 @@ The distributed system during Serving is different than Training because
 ```mermaid
 graph TD
 Client --> LoadBalancer
-LoadBalancer --> Node1[Inference Node 1<br/>(Tensor Parallelism: GPU0,1)]
-LoadBalancer --> Node2[Inference Node 2<br/>(Tensor Parallelism: GPU2,3)]
-LoadBalancer --> Node3[Inference Node 3<br/>(Tensor Parallelism: GPU4,5)]
+LoadBalancer --> Node1["Inference Node 1 (Tensor Parallelism: GPU0,1)"]
+LoadBalancer --> Node2["Inference Node 2 (Tensor Parallelism: GPU2,3)"]
+LoadBalancer --> Node3["Inference Node 3 (Tensor Parallelism: GPU4,5)"]
 ```
 
 ## Code in Jax
