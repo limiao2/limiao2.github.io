@@ -164,7 +164,7 @@ graph TD
     DP --> TP2[Tensor Parallelism Group 2<br/>GPU 4,5,6,7]
 ```
 
-## Measurement
+### Measurement
 When introducing a new approach for parallelism and distributed systems in LLMs, we can evaluate performance using these key metrics:
 
 | Evaluation Metrics         | Examples                                             |
@@ -192,6 +192,14 @@ The distributed system during Serving is different than Training because
 | **Memory Management** | Stores parameters, gradients, optimizer states | Only model parameters, no gradients/optimizer |
 | **Elastic Scaling** | Fixed scale, infrequent scaling | Rapid auto-scaling based on traffic |
 | **Resource Utilization** | Emphasizes high resource saturation | Emphasizes response speed and flexibility |
+
+```mermaid
+graph TD
+Client --> LoadBalancer
+LoadBalancer --> Node1[Inference Node 1<br/>(Tensor Parallelism: GPU0,1)]
+LoadBalancer --> Node2[Inference Node 2<br/>(Tensor Parallelism: GPU2,3)]
+LoadBalancer --> Node3[Inference Node 3<br/>(Tensor Parallelism: GPU4,5)]
+```
 
 ## Code in Jax
 
