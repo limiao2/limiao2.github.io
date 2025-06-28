@@ -39,58 +39,69 @@ When introducing a new approach for parallelism and distributed systems in LLMs,
 
 ```mermaid
 graph LR
-A[Distributed Training] -->B(Model Parallelism)
-A -->C(Data Parallelism)
-    B --> D(Tensor Parallelism)
-    B --> E(Pipeline Parallelism)
-    B --> F(Expert Parallelism)
+  %% Main entry
+  DistributedTraining[Distributed Training]
+
+  %% Model Parallelism Subgraph
+  subgraph ModelParallelism [Model Parallelism]
+    direction TB
+    TensorParallelism[Tensor Parallelism]
+    PipelineParallelism[Pipeline Parallelism]
+    ExpertParallelism[Expert Parallelism]
+  end
+
+  %% Data Parallelism Subgraph
+  subgraph DataParallelism [Data Parallelism]
+    direction TB
+    SynchronousDP[Synchronous DP]
+    AsynchronousDP[Asynchronous DP]
+  end
+
+  %% Hybrid Parallelisms
+  HybridParallelism[Hybrid Parallelism]
+
+  %% Connections
+  DistributedTraining --> ModelParallelism
+  DistributedTraining --> DataParallelism
+  DistributedTraining --> HybridParallelism
 ```
 
 ## Model Parallelism
 
 ### Tensor Parallelism
+Tensor parallelism is used when individual operations in a model involve matrices with tremendous numbers of parameters. In the attention mechanism, for example, we split the query, key, and value projection matrices column-wise across devices. Each device computes its portion of the attention computation, and the results are combined using collective communication operations like all-reduce or all-gather.
 
-1. Model Parallelism
-   - Tensor Parallelism
+**Example:**
 
-     Definition: 
-     
-     Tensor parallelism is used when individual operations in a model involve matrices with tremendous numbers of parameters. In the attention mechanism, for example, we split the query, key, and value projection matrices column-wise across devices. Each device computes its portion of the attention computation, and the results are combined using collective communication operations like all-reduce or all-gather.
+Matrix computation `y = x * W` where `W` is too large to fit on a single GPU. Matrix `W`: shape `(4096, 4096)`. Input `x`: shape `(1, 4096)`. Target: 4 GPUs available. 
 
-     Example:
-     
-     Matrix computation `y = x * W` where `W` is too large to fit on a single GPU. Matrix `W`: shape `(4096, 4096)`. Input `x`: shape `(1, 4096)`. Target: 4 GPUs available. 
+**Partition the weight matrix**: Split `W` column-wise across 4 GPUs
+- GPU 0: `W1` with shape `(4096, 1024)`
+- GPU 1: `W2` with shape `(4096, 1024)` 
+- GPU 2: `W3` with shape `(4096, 1024)`
+- GPU 3: `W4` with shape `(4096, 1024)`
 
-    **Partition the weight matrix**: Split `W` column-wise across 4 GPUs
-    - GPU 0: `W1` with shape `(4096, 1024)`
-    - GPU 1: `W2` with shape `(4096, 1024)` 
-    - GPU 2: `W3` with shape `(4096, 1024)`
-    - GPU 3: `W4` with shape `(4096, 1024)`
+**Parallel computation**: Each GPU computes its portion simultaneously
+- GPU 0: y1 = x * W1  → output shape (1, 1024)
+- GPU 1: y2 = x * W2  → output shape (1, 1024)
+- GPU 2: y3 = x * W3  → output shape (1, 1024)
+- GPU 3: y4 = x * W4  → output shape (1, 1024)
 
-    **Parallel computation**: Each GPU computes its portion simultaneously
-    - GPU 0: y1 = x * W1  → output shape (1, 1024)
-    - GPU 1: y2 = x * W2  → output shape (1, 1024)
-    - GPU 2: y3 = x * W3  → output shape (1, 1024)
-    - GPU 3: y4 = x * W4  → output shape (1, 1024)
+**Combine results**: Concatenate partial outputs to form the complete result y = [y1, y2, y3, y4]  → final shape (1, 4096)
 
-    **Combine results**: Concatenate partial outputs to form the complete result y = [y1, y2, y3, y4]  → final shape (1, 4096)
 
-2. **Parallel computation**: Each GPU computes its portion simultaneously
+### Pipeline Parallelism
 
-   - Pipeline Parallelism
+Definition: Pipeline parallelism is used for models with many layers. We split the layers vertically into stages, with each device responsible for computing a specific stage. Batch data flows sequentially through the stages to complete the full forward pass.
 
-     Definition: Pipeline parallelism is used for models with many layers. We split the layers vertically into stages, with each device responsible for computing a specific stage. Batch data flows sequentially through the stages to complete the full forward pass.
-
-     Example:
-   - Expert Parallelism  
-
-     Definition: 
+Example:
+### Expert Parallelism  
 
      Example:
     
-2. Data Parallelism
-   - Synchronous DP
-   - Asynchronous DP
+## Data Parallelism
+### Synchronous DP
+### Asynchronous DP
 
 # Distributed Serving
 
