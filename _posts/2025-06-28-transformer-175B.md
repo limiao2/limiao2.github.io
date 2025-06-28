@@ -1,5 +1,5 @@
 ---
-title: LLM Distributed System
+title: Transformer Illustration with 175B Parameters
 date: 2025-06-27 15:00:00 -0800
 categories: [LLM, Model]
 tags: [llm, transformer]
