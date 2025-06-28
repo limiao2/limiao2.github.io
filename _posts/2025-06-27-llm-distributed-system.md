@@ -183,6 +183,16 @@ When introducing a new approach for parallelism and distributed systems in LLMs,
 
 # Distributed Serving
 
+The distributed system during Serving is different than Training because
+
+| **Aspect** | **Training** | **Serving** |
+|---|---|---|
+| **Data Processing** | Large batch data | Real-time single/small batch data |
+| **Latency Requirements** | Low latency priority, focuses on throughput | Extremely high latency requirements |
+| **Memory Management** | Stores parameters, gradients, optimizer states | Only model parameters, no gradients/optimizer |
+| **Elastic Scaling** | Fixed scale, infrequent scaling | Rapid auto-scaling based on traffic |
+| **Resource Utilization** | Emphasizes high resource saturation | Emphasizes response speed and flexibility |
+
 # Code in Jax
 
 # Code in Pytorch
