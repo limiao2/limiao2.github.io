@@ -3,7 +3,7 @@ title: LLM Distributed System
 date: 2025-06-27 15:00:00 -0800
 categories: [LLM, Infra]
 tags: [llm, distributed_system]
-pin: true
+pin: false
 ---
 
 # Why Distributed System for LLM?
