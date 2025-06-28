@@ -1,6 +1,6 @@
 ---
 title: Welcome to My Tech Blog
-date: 2025-06-27 10:00:00 -0800
+date: 2025-06-27 10:00:00 -0700
 pin: false
 ---
 
