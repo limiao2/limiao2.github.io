@@ -38,32 +38,25 @@ When introducing a new approach for parallelism and distributed systems in LLMs,
 # Distributed Training
 
 ```mermaid
-graph LR
-  %% Main entry
-  DistributedTraining[Distributed Training]
-
-  %% Model Parallelism Subgraph
-  subgraph ModelParallelism [Model Parallelism]
-    direction TB
-    TensorParallelism[Tensor Parallelism]
-    PipelineParallelism[Pipeline Parallelism]
-    ExpertParallelism[Expert Parallelism]
-  end
-
-  %% Data Parallelism Subgraph
-  subgraph DataParallelism [Data Parallelism]
-    direction TB
-    SynchronousDP[Synchronous DP]
-    AsynchronousDP[Asynchronous DP]
-  end
-
-  %% Hybrid Parallelisms
-  HybridParallelism[Hybrid Parallelism]
-
-  %% Connections
-  DistributedTraining --> ModelParallelism
-  DistributedTraining --> DataParallelism
-  DistributedTraining --> HybridParallelism
+flowchart LR
+  A[Distributed Training]
+  B[Model Parallelism]
+  C[Data Parallelism]
+  D[Hybrid Parallelism]
+  E[Tensor Parallelism]
+  F[Pipeline Parallelism]
+  G[Expert Parallelism]
+  H[Synchronous DP]
+  I[Asynchronous DP]
+  
+  A --> B
+  A --> C
+  A --> D
+  B --> E
+  B --> F
+  B --> G
+  C --> H
+  C --> I
 ```
 
 ## Model Parallelism
