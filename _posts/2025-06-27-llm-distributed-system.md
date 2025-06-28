@@ -92,7 +92,7 @@ Matrix computation `y = x * W` where `W` is too large to fit on a single GPU. Ma
 
 ### Pipeline Parallelism
 
-Definition: Pipeline parallelism is used for models with many layers. We split the layers vertically into stages, with each device responsible for computing a specific stage. Batch data flows sequentially through the stages to complete the full forward pass.
+Pipeline parallelism is used for models with many layers. We split the layers vertically into stages, with each device responsible for computing a specific stage. Batch data flows sequentially through the stages to complete the full forward pass.
 
 **Example:**
 
