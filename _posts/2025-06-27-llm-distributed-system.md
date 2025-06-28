@@ -122,8 +122,47 @@ Assume a MoE layer contains 16 experts, where each expert is an individual Feed-
 When input tokens pass through the MoE layer, the routing mechanism determines which expert(s) should process each token. For example, if the router decides that a particular token should be processed by Expert 5, only GPU 2 receives and computes that token. Different tokens in the same batch may be routed to different experts, allowing multiple GPUs to work simultaneously on different portions of the batch.
     
 ## Data Parallelism
+
+Data Parallelism distributes training data across multiple devices while keeping identical model copies on each device. Each device processes different data batches and shares gradient updates to keep models synchronized.
+
 ### Synchronous DP
+
+- All devices process different data batches simultaneously
+- After computing gradients, devices wait for all others to finish
+- Gradients are aggregated (typically via all-reduce) across all devices
+- Model parameters are updated simultaneously on all devices
+- Next iteration begins only after all devices are synchronized
+
 ### Asynchronous DP
+- Each device processes data and updates parameters independently
+- No waiting for other devices to finish
+- Gradients are sent to parameter servers when ready
+- Devices fetch latest parameters when available (may be stale)
+- Different devices can be at different training steps
+
+## Hybrid Parallelism
+In practice, we typically combine multiple parallelism strategies to efficiently train  LLMs. The most common approach combines data parallelism and model parallelism.
+
+**Example**
+Assume we have 8 GPUs arranged in a 2×4 configuration:
+- 2 data parallel groups (replicas)
+- 4 GPUs per tensor parallel group (model sharding within each replica)
+
+- Step 1: Data Parallelism
+    - Split the input batch into 2 sub-batches. 
+    - Each tensor parallelism group processes one sub-batch independently.
+- Step 2: Model Computation
+    - Within each 4-GPU group, model parameters are sharded across GPUs. Each GPU computes its portion of the forward/backward pass
+- Step 3: Intra-group Gradient Synchronization
+    - Within each tensor parallel group, aggregate gradients across the 4 GPUs
+- Step 4: Inter-group Gradient Synchronization
+    - Perform all-reduce across the 2 groups to synchronize gradients globally
+
+```mermaid
+graph TD
+    DP[Data Parallelism] --> TP1[Tensor Parallelism Group 1<br/>GPU 0,1,2,3]
+    DP --> TP2[Tensor Parallelism Group 2<br/>GPU 4,5,6,7]
+```
 
 # Measurement
 When introducing a new approach for parallelism and distributed systems in LLMs, we can evaluate performance using these key metrics:
