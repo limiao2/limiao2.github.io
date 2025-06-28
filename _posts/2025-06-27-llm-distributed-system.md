@@ -76,16 +76,16 @@ Tensor parallelism is used when individual operations in a model involve matrice
 Matrix computation `y = x * W` where `W` is too large to fit on a single GPU. Matrix `W`: shape `(4096, 4096)`. Input `x`: shape `(1, 4096)`. Target: 4 GPUs available. 
 
 **Partition the weight matrix**: Split `W` column-wise across 4 GPUs
-- GPU 0: `W1` with shape `(4096, 1024)`
-- GPU 1: `W2` with shape `(4096, 1024)` 
-- GPU 2: `W3` with shape `(4096, 1024)`
-- GPU 3: `W4` with shape `(4096, 1024)`
+- GPU 1: `W1` with shape `(4096, 1024)`
+- GPU 2: `W2` with shape `(4096, 1024)` 
+- GPU 3: `W3` with shape `(4096, 1024)`
+- GPU 4: `W4` with shape `(4096, 1024)`
 
 **Parallel computation**: Each GPU computes its portion simultaneously
-- GPU 0: y1 = x * W1  → output shape (1, 1024)
-- GPU 1: y2 = x * W2  → output shape (1, 1024)
-- GPU 2: y3 = x * W3  → output shape (1, 1024)
-- GPU 3: y4 = x * W4  → output shape (1, 1024)
+- GPU 1: y1 = x * W1  → output shape (1, 1024)
+- GPU 2: y2 = x * W2  → output shape (1, 1024)
+- GPU 3: y3 = x * W3  → output shape (1, 1024)
+- GPU 4: y4 = x * W4  → output shape (1, 1024)
 
 **Combine results**: Concatenate partial outputs to form the complete result y = [y1, y2, y3, y4]  → final shape (1, 4096)
 
@@ -96,9 +96,34 @@ Pipeline parallelism is used for models with many layers. We split the layers ve
 
 **Example:**
 
+Assume our Transformer model has 24 layers. We partition them into 4 pipeline stages across 4 available GPUs, with each stage containing 6 consecutive layers.
+
+**Partition the layers**:
+- GPU 1: Layer 1-6 (Stage 1)
+- GPU 2: Layer 7-12 (Stage 2)
+- GPU 3: Layer 13-18 (Stage 3)
+- GPU 4: Layer 19-24 (Stage 4)
+
+**Pipeline computation**:
+- Batch 1 is processed by GPU 1 through layers 1-6, then the intermediate results are passed to GPU 2
+- While GPU 2 processes Batch 1 through layers 7-12, GPU 1 begins processing Batch 2 through layers 1-6
+- This pipeline continues: each GPU processes its assigned layers for one batch while simultaneously receiving intermediate results from the previous stage
+
 ### Expert Parallelism  
+When LLMs utilize the Mixture-of-Experts (MoE) architecture, we can distribute experts across different devices to enable parallel computation.
 
 **Example:**
+
+Assume a MoE layer contains 16 experts, where each expert is an individual Feed-Forward Network (FFN).
+
+**Partition the experts**:
+- GPU 1: Expert 1-4
+- GPU 2: Expert 5-8
+- GPU 3: Expert 9-12
+- GPU 4: Expert 13-16
+
+**Parallel computation**:
+When input tokens pass through the MoE layer, the routing mechanism determines which expert(s) should process each token. For example, if the router decides that a particular token should be processed by Expert 5, only GPU 2 receives and computes that token. Different tokens in the same batch may be routed to different experts, allowing multiple GPUs to work simultaneously on different portions of the batch.
     
 ## Data Parallelism
 ### Synchronous DP
