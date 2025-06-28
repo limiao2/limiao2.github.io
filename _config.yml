@@ -228,3 +228,7 @@ jekyll-archives:
 mermaid:
   enable: true  # Ensure this line exists and is set to true
   version: "10.9.0" # or the latest stable version
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
