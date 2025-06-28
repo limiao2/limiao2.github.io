@@ -113,7 +113,7 @@ graph TB
 graph LR
   classDef blk fill:#fafafa,stroke:#999,stroke-width:1px
   subgraph IN["Input — 2048 tokens"]
-      T[Tokens]:::blk --> E[Embed<br/>d = 12 288]:::blk --> P[PosEnc]:::blk
+      T[Tokens]:::blk --> E[Embed<br/>d = 12,288]:::blk --> P[PosEnc]:::blk
   end
   subgraph STACK["64 × Transformer Layers"]
       IN --> B[see next diagram ►]:::blk
@@ -137,7 +137,7 @@ graph LR
   %% MoE FFN
   subgraph MOEFFN["Mixture-of-Experts FFN"]
     Gate[Gate net<br/>Top-2]:::moe --> Rt[Router]:::moe -->
-    Exp[128 experts<br/>12 288→49 152→12 288]:::moe --> Comb[Combine]:::moe
+    Exp[128 experts<br/>12,288→49,152→12,288]:::moe --> Comb[Combine]:::moe
   end
 
   P[Prev h] --> ATTN --> LN1[+ Residual / LN]:::attn --> MOEFFN --> LN2[+ Residual / LN]:::attn
