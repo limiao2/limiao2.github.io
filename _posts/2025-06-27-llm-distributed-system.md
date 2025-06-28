@@ -37,6 +37,8 @@ When introducing a new approach for parallelism and distributed systems in LLMs,
 
 # Distributed Training
 
+## Model Parallelism
+
 ```mermaid
 graph LR
   %% Main entry
@@ -66,7 +68,11 @@ graph LR
   DistributedTraining --> HybridParallelism
 ```
 
-## Model Parallelism
+| **Parallelism Method** | **Dimension** | **Use Case** | **Characteristics** | **Representative Framework** |
+|---|---|---|---|---|
+| **Tensor Parallel** | Within single layer operators | Single layer too large | Parameter/computation parallel, high-frequency communication | Megatron-LM |
+| **Pipeline Parallel** | Vertical model partitioning | Deep models | Stage-wise execution, pipeline bubble issues | GPipe |
+| **Expert Parallel** | Multiple expert modules within layer | MoE architecture models | Large capacity, sparse computation, efficient | Switch Transformer, GShard |
 
 ### Tensor Parallelism
 Tensor parallelism is used when individual operations in a model involve matrices with tremendous numbers of parameters. In the attention mechanism, for example, we split the query, key, and value projection matrices column-wise across devices. Each device computes its portion of the attention computation, and the results are combined using collective communication operations like all-reduce or all-gather.
