@@ -1,5 +1,5 @@
 ---
-title: Transformer Illustration with 175B Parameters
+title: Inside a 175B Parameter MoE Transformer: Architecture Deep Dive
 date: 2025-06-27 15:00:00 -0800
 categories: [LLM, Model]
 tags: [llm, transformer]
@@ -7,7 +7,7 @@ pin: false
 ---
 
 ## Goal
-Illustrate a 175B MoE Transformer Architecture to understand the model and infra details.
+This post provides a detailed visual breakdown of a 175B parameter Mixture of Experts (MoE) Transformer architecture.
 
 ## Diagram
 
