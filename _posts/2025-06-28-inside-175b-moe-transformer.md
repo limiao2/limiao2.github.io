@@ -105,3 +105,57 @@ graph TB
     class Distributed_Arch distStyle
     class Model_Stats statsStyle
 ```
+
+
+<details open markdown="block"><summary>🗺️ Model-level flow</summary>
+
+```mermaid
+graph LR
+  classDef blk fill:#fafafa,stroke:#999,stroke-width:1px
+  subgraph IN["Input — 2048 tokens"]
+      T[Tokens]:::blk --> E[Embed<br/>d = 12 288]:::blk --> P[PosEnc]:::blk
+  end
+  subgraph STACK["64 × Transformer Layers"]
+      IN --> B[see next diagram ►]:::blk
+  end
+  STACK --> OUT[Final LN → LM Head → Softmax]:::blk
+```
+</details>
+
+<details markdown="block"><summary>🔍 Single Transformer Layer</summary>
+
+```mermaid
+graph LR
+  classDef attn fill:#f0f8ff,stroke:#3182bd,stroke-width:1px
+  classDef moe  fill:#fff7e6,stroke:#d94801,stroke-width:1px
+
+  %% Attention
+  subgraph ATTN["Multi-Head Self-Attn"]
+    QKV[Q K V proj<br/>96 × 128]:::attn --> SD[Scaled Dot]:::attn --> AO[Out proj]:::attn
+  end
+
+  %% MoE FFN
+  subgraph MOEFFN["Mixture-of-Experts FFN"]
+    Gate[Gate net<br/>Top-2]:::moe --> Rt[Router]:::moe -->
+    Exp[128 experts<br/>12 288→49 152→12 288]:::moe --> Comb[Combine]:::moe
+  end
+
+  P[Prev h] --> ATTN --> LN1[+ Residual / LN]:::attn --> MOEFFN --> LN2[+ Residual / LN]:::attn
+```
+</details>
+
+<details markdown="block"><summary>🌐 Parallelism & Cluster Layout</summary>
+
+```mermaid
+graph TB
+  classDef c fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
+  TP[Tensor Parallel<br/>split QKV & FFN]:::c
+  PP[Pipeline Parallel<br/>4 stages]:::c
+  EP[Expert Parallel<br/>4 experts / GPU]:::c
+  TP --- PP --- EP
+
+  subgraph CLUSTER["32 × A100 — 80 GB each"]
+    TP & PP & EP --> NET[NVLink + InfiniBand]:::c
+  end
+```
+</details>
