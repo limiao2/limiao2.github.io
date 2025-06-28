@@ -1,5 +1,5 @@
 ---
-title: Inside a 175B Parameter MoE Transformer: Architecture Deep Dive
+title: "Inside a 175B Parameter MoE Transformer: Architecture Deep Dive"
 date: 2025-06-27 15:00:00 -0800
 categories: [LLM, Model]
 tags: [llm, transformer]
