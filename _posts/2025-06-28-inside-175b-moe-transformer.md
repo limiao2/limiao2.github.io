@@ -107,7 +107,7 @@ graph TB
 ```
 
 
-<details open markdown="block"><summary>🗺️ Model-level flow</summary>
+### 🗺️ Model-level flow
 
 ```mermaid
 graph LR
@@ -120,9 +120,8 @@ graph LR
   end
   STACK --> OUT[Final LN → LM Head → Softmax]:::blk
 ```
-</details>
 
-<details markdown="block"><summary>🔍 Single Transformer Layer</summary>
+### 🔍 Single Transformer Layer
 
 ```mermaid
 graph LR
@@ -142,9 +141,9 @@ graph LR
 
   P[Prev h] --> ATTN --> LN1[+ Residual / LN]:::attn --> MOEFFN --> LN2[+ Residual / LN]:::attn
 ```
-</details>
 
-<details markdown="block"><summary>🌐 Parallelism & Cluster Layout</summary>
+
+### 🌐 Parallelism & Cluster Layout
 
 ```mermaid
 graph TB
@@ -158,4 +157,3 @@ graph TB
     TP & PP & EP --> NET[NVLink + InfiniBand]:::c
   end
 ```
-</details>
