@@ -6,7 +6,7 @@ tags: [llm, distributed_system]
 pin: false
 ---
 
-# Why Distributed System for LLM?
+## Why Distributed System for LLM?
 LLMs require distributed systems due to their **scale** — in both memory and compute.
 
 1. **Too Large to Fit**  
@@ -24,9 +24,9 @@ LLMs require distributed systems due to their **scale** — in both memory and c
 
    1.8 × 10²⁴ / 10¹⁵ = 1.8 × 10⁹ seconds ≈ 57.1 years
 
-# Distributed Training
+## Distributed Training
 
-## Model Parallelism
+### Model Parallelism
 
 ```mermaid
 graph LR
@@ -63,7 +63,7 @@ graph LR
 | **Pipeline Parallel** | Vertical model partitioning | Deep models | Stage-wise execution, pipeline bubble issues | GPipe |
 | **Expert Parallel** | Multiple expert modules within layer | MoE architecture models | Large capacity, sparse computation, efficient | Switch Transformer, GShard |
 
-### Tensor Parallelism
+#### Tensor Parallelism
 Tensor parallelism is used when individual operations in a model involve matrices with tremendous numbers of parameters. In the attention mechanism, for example, we split the query, key, and value projection matrices column-wise across devices. Each device computes its portion of the attention computation, and the results are combined using collective communication operations like all-reduce or all-gather.
 
 **Example:**
@@ -85,7 +85,7 @@ Matrix computation `y = x * W` where `W` is too large to fit on a single GPU. Ma
 **Combine results**: Concatenate partial outputs to form the complete result y = [y1, y2, y3, y4]  → final shape (1, 4096)
 
 
-### Pipeline Parallelism
+#### Pipeline Parallelism
 
 Pipeline parallelism is used for models with many layers. We split the layers vertically into stages, with each device responsible for computing a specific stage. Batch data flows sequentially through the stages to complete the full forward pass.
 
@@ -105,7 +105,7 @@ Assume our Transformer model has 24 layers. We partition them into 4 pipeline st
 - This pipeline continues: each GPU processes its assigned layers for one batch while simultaneously receiving intermediate results from the previous stage
 - Notice we may have the pipeline bubble issue. In pipeline parallelism, GPUs must wait for data from previous stages, creating unavoidable idle periods. More micro-batches and process multiple batches simultaneously can reduce bubble ratio. 
 
-### Expert Parallelism  
+#### Expert Parallelism  
 When LLMs utilize the Mixture-of-Experts (MoE) architecture, we can distribute experts across different devices to enable parallel computation.
 
 **Example:**
@@ -121,11 +121,11 @@ Assume a MoE layer contains 16 experts, where each expert is an individual Feed-
 **Parallel computation**:
 When input tokens pass through the MoE layer, the routing mechanism determines which expert(s) should process each token. For example, if the router decides that a particular token should be processed by Expert 5, only GPU 2 receives and computes that token. Different tokens in the same batch may be routed to different experts, allowing multiple GPUs to work simultaneously on different portions of the batch.
     
-## Data Parallelism
+### Data Parallelism
 
 Data Parallelism distributes training data across multiple devices while keeping identical model copies on each device. Each device processes different data batches and shares gradient updates to keep models synchronized.
 
-### Synchronous DP
+#### Synchronous DP
 
 - All devices process different data batches simultaneously
 - After computing gradients, devices wait for all others to finish
@@ -133,14 +133,14 @@ Data Parallelism distributes training data across multiple devices while keeping
 - Model parameters are updated simultaneously on all devices
 - Next iteration begins only after all devices are synchronized
 
-### Asynchronous DP
+#### Asynchronous DP
 - Each device processes data and updates parameters independently
 - No waiting for other devices to finish
 - Gradients are sent to parameter servers when ready
 - Devices fetch latest parameters when available (may be stale)
 - Different devices can be at different training steps
 
-## Hybrid Parallelism
+### Hybrid Parallelism
 In practice, we typically combine multiple parallelism strategies to efficiently train  LLMs. The most common approach combines data parallelism and model parallelism.
 
 **Example**
@@ -164,7 +164,7 @@ graph TD
     DP --> TP2[Tensor Parallelism Group 2<br/>GPU 4,5,6,7]
 ```
 
-# Measurement
+## Measurement
 When introducing a new approach for parallelism and distributed systems in LLMs, we can evaluate performance using these key metrics:
 
 | Evaluation Metrics         | Examples                                             |
@@ -181,7 +181,7 @@ When introducing a new approach for parallelism and distributed systems in LLMs,
 | **Pipeline Parallel** | ↑ Improved (notable for deep models) | ↑ Increased (pipeline bubbles) | Medium (pipeline idle time) | Medium (inter-stage comm) | No impact |
 | **Expert Parallel** | ↑ Improved (sparse computation) | ↔ Minimal change | Balanced | High (all-to-all intensive) | ↑ Improved (larger capacity) |
 
-# Distributed Serving
+## Distributed Serving
 
 The distributed system during Serving is different than Training because
 
@@ -193,6 +193,6 @@ The distributed system during Serving is different than Training because
 | **Elastic Scaling** | Fixed scale, infrequent scaling | Rapid auto-scaling based on traffic |
 | **Resource Utilization** | Emphasizes high resource saturation | Emphasizes response speed and flexibility |
 
-# Code in Jax
+## Code in Jax
 
-# Code in Pytorch
+## Code in Pytorch
