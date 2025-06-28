@@ -24,17 +24,6 @@ LLMs require distributed systems due to their **scale** — in both memory and c
 
    1.8 × 10²⁴ / 10¹⁵ = 1.8 × 10⁹ seconds ≈ 57.1 years
 
-# Measurement
-When introducing a new approach for parallelism and distributed systems in LLMs, we can evaluate performance using these key metrics:
-
-| Evaluation Metrics         | Examples                                             |
-|----------------------------|------------------------------------------------------|
-| **Throughput**             | Tokens per second (`time.perf_counter()`)            |
-| **Latency**                | Single-step timing, GPU/TPU trace                    |
-| **Device Utilization**     | GPU utilization, TPU profiler    |
-| **Communication Overhead** | Percentage of `all-reduce`, `all-gather` operations  |
-| **Model Accuracy**         | PPL, Accuracy, F1-score       |                           |
-
 # Distributed Training
 
 ## Model Parallelism
@@ -114,6 +103,7 @@ Assume our Transformer model has 24 layers. We partition them into 4 pipeline st
 - Batch 1 is processed by GPU 1 through layers 1-6, then the intermediate results are passed to GPU 2
 - While GPU 2 processes Batch 1 through layers 7-12, GPU 1 begins processing Batch 2 through layers 1-6
 - This pipeline continues: each GPU processes its assigned layers for one batch while simultaneously receiving intermediate results from the previous stage
+- Notice we may have the pipeline bubble issue. In pipeline parallelism, GPUs must wait for data from previous stages, creating unavoidable idle periods. More micro-batches and process multiple batches simultaneously can reduce bubble ratio. 
 
 ### Expert Parallelism  
 When LLMs utilize the Mixture-of-Experts (MoE) architecture, we can distribute experts across different devices to enable parallel computation.
@@ -134,6 +124,23 @@ When input tokens pass through the MoE layer, the routing mechanism determines w
 ## Data Parallelism
 ### Synchronous DP
 ### Asynchronous DP
+
+# Measurement
+When introducing a new approach for parallelism and distributed systems in LLMs, we can evaluate performance using these key metrics:
+
+| Evaluation Metrics         | Examples                                             |
+|----------------------------|------------------------------------------------------|
+| **Throughput**             | Tokens per second (`time.perf_counter()`)            |
+| **Latency**                | Single-step timing, GPU/TPU trace                    |
+| **Device Utilization**     | GPU utilization, TPU profiler    |
+| **Communication Overhead** | Percentage of `all-reduce`, `all-gather` operations  |
+| **Model Accuracy**         | PPL, Accuracy, F1-score       |                           |
+
+| **Method** | **Throughput** | **Latency** | **GPU/TPU Utilization** | **Communication Overhead** | **Accuracy** |
+|---|---|---|---|---|---|
+| **Tensor Parallel** | ↑ Significant boost | ↓ Reduced | ↑ Improved | High (all-reduce intensive) | No impact |
+| **Pipeline Parallel** | ↑ Improved (notable for deep models) | ↑ Increased (pipeline bubbles) | Medium (pipeline idle time) | Medium (inter-stage comm) | No impact |
+| **Expert Parallel** | ↑ Improved (sparse computation) | ↔ Minimal change | Balanced | High (all-to-all intensive) | ↑ Improved (larger capacity) |
 
 # Distributed Serving
 
